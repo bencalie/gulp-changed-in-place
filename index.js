@@ -1,11 +1,11 @@
 var crypto = require('crypto');
 var through = require('through2');
-
+var fs = require('fs');
 var GLOBAL_CACHE = {};
 
 module.exports = function(options) {
   options = options || {};
-
+  var filePath = options.path;
   var cache = options.cache || GLOBAL_CACHE;
   var firstPass = options.firstPass === true;
 
@@ -23,15 +23,22 @@ module.exports = function(options) {
       return done();
     }
 
+    cache = require("./test.json");
+    if(fs.existsSync(filePath)){
+      cache = JSON.parse(fs.readFileSync(filePath));
+    } else {
+      console.log(filePath + " is NOT exists");
+      cache = {};
+    }
+
     var newHash = crypto.createHash('sha1').update(file.contents).digest('hex');
     var currentHash = cache[file.path];
     cache[file.path] = newHash;
-
-    if ((!currentHash && firstPass) || (currentHash && currentHash !== newHash)) {
-      this.push(file);
+    fs.writeFileSync(filePath, JSON.stringify(cache));
+    if ((currentHash == null) || (currentHash != null && currentHash != newHash)) {
+      done();
+    } else {
+      return done();
     }
-
-
-    done();
   });
 };
