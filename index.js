@@ -36,6 +36,7 @@ module.exports = function(options) {
     cache[file.path] = newHash;
     fs.writeFileSync(filePath, JSON.stringify(cache));
     if ((currentHash == null) || (currentHash != null && currentHash != newHash)) {
+      this.push(file);
       done();
     } else {
       return done();
