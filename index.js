@@ -23,7 +23,7 @@ module.exports = function(options) {
       return done();
     }
 
-    cache = require("./test.json");
+    cache = {};
     if(fs.existsSync(filePath)){
       cache = JSON.parse(fs.readFileSync(filePath));
     } else {
